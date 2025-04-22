@@ -28,7 +28,7 @@ int main()
 
     Tarea *nuevaTarea;
     int id = 999;
-    InsertarNodo(&start, CrearNodo(&nuevaTarea, &id));
+    InsertarNodo(&start, CrearNodo(nuevaTarea, &id));
 
     free(nuevaTarea->Descripcion);
 
