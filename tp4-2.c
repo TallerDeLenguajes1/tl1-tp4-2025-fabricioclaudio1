@@ -3,35 +3,54 @@
 #include <string.h>
 #include <time.h>
 
-typedef struct
+typedef struct Tarea
 {
     int TareaID;       // Numérico autoincremental comenzando en 1000
     char *Descripcion; //
     int Duracion;      // entre 10 – 100
 } Tarea;
 
-typedef struct
+typedef struct Nodo Nodo;
+typedef struct Nodo
 {
     Tarea T;
     Nodo *Siguiente;
-} Nodo;
+}Nodo;
+
+
 
 Nodo *IniciarListaVacia();
-Nodo *CrearNodo(Tarea *nuevaTarea, int *id);
+Nodo *CrearNodo(Tarea nuevaTarea);
 void InsertarNodo(Nodo **inicio, Nodo *NNodo);
+void MostrarTarea(Nodo *TNodo);
 ///
 int main()
 {
     srand(time(NULL));
 
     Nodo *start = IniciarListaVacia();
-
-    Tarea *nuevaTarea;
     int id = 999;
-    InsertarNodo(&start, CrearNodo(nuevaTarea, &id));
+    Tarea nuevaTarea;
+    char buff[200];
+    
+    //Crear Nueva Tarea
+    printf("Crear una nueva tarea \n");
+    printf("Ingrese una descripción de la tarea: \n");
+    fgets(buff, 200, stdin);
+    buff[strcspn(buff, "\n")] = '\0'; // Eliminar salto de linea
+    getchar();
+    nuevaTarea.TareaID = id + 1;
+    nuevaTarea.Descripcion = (char *)malloc((strlen(buff) + 1) * sizeof(char));
+    strcpy(nuevaTarea.Descripcion, buff);
+    nuevaTarea.Duracion = rand() % 91 + 10;
 
-    free(nuevaTarea->Descripcion);
+    //Insertar Tarea Nodo a Lista
+    InsertarNodo(&start, CrearNodo(nuevaTarea));
 
+    //Mostrar Tarea
+    MostrarTarea(start);
+
+    free(nuevaTarea.Descripcion);
     return 0;
 }
 
@@ -40,28 +59,22 @@ Nodo *IniciarListaVacia()
     return NULL;
 }
 
-Nodo *CrearNodo(Tarea *nuevaTarea, int *id)
+Nodo *CrearNodo(Tarea nuevaTarea)
 {
-    char buff[200];
-    printf("Crear una nueva tarea \n");
-    printf("Ingrese una descripción de la tarea: \n");
-    fgets(buff, 200, stdin);
-    buff[strcspn(buff, "\n")] = '\0'; // Eliminar salto de linea
-
-    nuevaTarea->TareaID = *id + 1;
-    nuevaTarea->Descripcion = (char *)malloc((strlen(buff) + 1) * sizeof(char));
-    nuevaTarea->Duracion = rand() % 91 + 10;
-
     Nodo *Tnodo = (Nodo *)malloc(sizeof(Nodo));
-    Tnodo->T = *nuevaTarea;
+    Tnodo->T = nuevaTarea;
     Tnodo->Siguiente = NULL;
-
     return Tnodo;
 }
 
-void InsertarNodo(Nodo **inicio, Nodo *NNodo)
+void InsertarNodo(Nodo **Start, Nodo *NuevoNodo)
 {
-    NNodo->Siguiente = *inicio;
-    *inicio = NNodo;
+    NuevoNodo->Siguiente = *Start;
+    *Start = NuevoNodo;
     
+}
+
+void MostrarTarea(Nodo *TNodo){
+    printf("La tarea es: %s \n",TNodo->T.Descripcion);
+    free(TNodo);
 }
