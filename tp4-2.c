@@ -15,40 +15,128 @@ typedef struct Nodo
 {
     Tarea T;
     Nodo *Siguiente;
-}Nodo;
-
-
+} Nodo;
 
 Nodo *IniciarListaVacia();
 Nodo *CrearNodo(Tarea nuevaTarea);
 void InsertarNodo(Nodo **inicio, Nodo *NNodo);
 void MostrarTarea(Nodo *TNodo);
 ///
+
 int main()
 {
     srand(time(NULL));
 
-    Nodo *start = IniciarListaVacia();
-    int id = 999;
+    Nodo *StartListaTPendiente = IniciarListaVacia();
+    Nodo *StartListaTRealizada = IniciarListaVacia();
+
+    int id = 1000;
     Tarea nuevaTarea;
     char buff[200];
-    
-    //Crear Nueva Tarea
-    printf("Crear una nueva tarea \n");
-    printf("Ingrese una descripción de la tarea: \n");
-    fgets(buff, 200, stdin);
-    buff[strcspn(buff, "\n")] = '\0'; // Eliminar salto de linea
-    getchar();
-    nuevaTarea.TareaID = id + 1;
-    nuevaTarea.Descripcion = (char *)malloc((strlen(buff) + 1) * sizeof(char));
-    strcpy(nuevaTarea.Descripcion, buff);
-    nuevaTarea.Duracion = rand() % 91 + 10;
 
-    //Insertar Tarea Nodo a Lista
-    InsertarNodo(&start, CrearNodo(nuevaTarea));
+    int select = 1;
 
-    //Mostrar Tarea
-    MostrarTarea(start);
+    while (select != 0)
+    {
+        printf("\n");
+        printf("Eliga una opcion: \n");
+        printf("1. Agregar una Tarea Pendiente.\n");
+        printf("2. Mover Tareas Pendientes a Realizadas.\n");
+        printf("3. Listar Tareas Pendientes y Realizadas.\n");
+        printf("4. Buscar Tareas por ID.\n");
+        printf("5. Buscar Tareas por palabra clave.\n");
+        printf("0. Salir.\n");
+
+        scanf("%d", &select);
+        getchar();
+
+        switch (select)
+        {
+        case 1:
+            select = 1;
+            while (select != 2)
+            {
+                // Agregar Nueva Tarea
+                printf("Ingrese una Descripcion de la tarea: \n");
+                fgets(buff, 200, stdin);
+                buff[strcspn(buff, "\n")] = '\0'; // Eliminar salto de linea
+                nuevaTarea.Descripcion = (char *)malloc((strlen(buff) + 1) * sizeof(char));
+                strcpy(nuevaTarea.Descripcion, buff);
+
+                printf("Ingrese la Duracion de la tarea entre 10 y 100: \n");
+                scanf("%d", &nuevaTarea.Duracion);
+                getchar();
+
+                nuevaTarea.TareaID = id;
+                id = id + 1;
+
+                // Insertar Tarea Nodo a Lista TPendiente
+                InsertarNodo(&StartListaTPendiente, CrearNodo(nuevaTarea));
+
+                printf("Desea agregar otra tarea? \n");
+                printf("1. SI\n");
+                printf("2. NO\n");
+                scanf("%d", &select);
+                getchar();
+            }
+            break;
+
+        case 2:
+        {
+            Nodo *Aux = StartListaTPendiente;
+            while (select != 1)
+            {
+                printf("Escribe ID para marcar como Realizada.\n");
+                printf("1. Volver atras.\n");
+                while (Aux->Siguiente)
+                {
+                    printf("|ID %d Tarea: %s Duracion: %d\n", Aux->T.TareaID, Aux->T.Descripcion, Aux->T.Duracion);
+                    Aux = Aux->Siguiente;
+                }
+                Aux = StartListaTPendiente;
+                scanf("%d", &select);
+                getchar();
+                if (select >= 1000)
+                {
+                    while (Aux != NULL && Aux->T.TareaID != select)
+                    {
+                        Aux = Aux->Siguiente;
+                    }
+                    if (Aux == NULL)
+                    {
+                        printf("Id no encontrada, vuelve a intentarlo.\n");
+                        break;
+                    }
+                    
+                    nuevaTarea = Aux->T;
+                    Nodo *nodoMover = QuitarNodo(&StartListaTPendiente,Aux->T.TareaID);
+                    InsertarNodo(&StartListaTRealizada,nodoMover);
+                }
+                else if (select != 1)
+                {
+                    printf("Opcion invalida, vuelve a intentarlo.\n");
+                }
+                
+            }
+        }
+        break;
+
+        case 3:
+
+            break;
+
+        case 4:
+
+            break;
+
+        case 5:
+
+            break;
+
+        default:
+            break;
+        }
+    }
 
     free(nuevaTarea.Descripcion);
     return 0;
@@ -67,14 +155,42 @@ Nodo *CrearNodo(Tarea nuevaTarea)
     return Tnodo;
 }
 
+Nodo *QuitarNodo(Nodo **Start, int id)
+{
+    Nodo *Aux = *Start;
+    Nodo *Anterior = NULL;
+
+    while (Aux != NULL && Aux->T.TareaID != id)
+    {
+        Anterior = Aux;
+        Aux = Aux->Siguiente;
+    }
+
+    if (Aux != NULL)
+    {
+        if (Aux == *Start)
+        {
+            *Start = Aux->Siguiente;
+        }
+        else
+        {
+            Anterior->Siguiente = Aux->Siguiente;
+        }
+        Aux->Siguiente = NULL;
+    }
+
+    return Aux;
+}
+
 void InsertarNodo(Nodo **Start, Nodo *NuevoNodo)
 {
     NuevoNodo->Siguiente = *Start;
     *Start = NuevoNodo;
-    
 }
 
-void MostrarTarea(Nodo *TNodo){
-    printf("La tarea es: %s \n",TNodo->T.Descripcion);
-    free(TNodo);
+void MostrarTarea(Nodo *Lista)
+{
+    printf("La tarea es: %s \n", Lista->T.Descripcion);
+    printf("Id: %d Duracion: %d \n", Lista->T.TareaID, Lista->T.Duracion);
+    free(Lista);
 }
