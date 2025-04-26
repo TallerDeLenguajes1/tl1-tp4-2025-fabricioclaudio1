@@ -26,7 +26,7 @@ void MostrarTarea(Nodo *TNodo);
 
 int main()
 {
-    srand(time(NULL));
+    // srand(time(NULL));
 
     Nodo *StartListaTPendiente = IniciarListaVacia();
     Nodo *StartListaTRealizada = IniciarListaVacia();
@@ -88,34 +88,53 @@ int main()
             Nodo *Aux = StartListaTPendiente;
             while (select != 0)
             {
-                printf("Escribe ID para marcar como Realizada.\n");
+                printf("Escribe ID para marcar como Realizada:\n");
                 printf("0. Volver atras.\n");
-                do
-                {
-                    printf("|ID %d Tarea: %s Duracion: %d\n", Aux->T.TareaID, Aux->T.Descripcion, Aux->T.Duracion);
-                    Aux = Aux->Siguiente;
-                } while (Aux->Siguiente);
 
-                Aux = StartListaTPendiente;
-                scanf("%d", &select);
-                getchar();
-                if (select >= 1000)
+                if (Aux == NULL)
                 {
-                    while (Aux != NULL && Aux->T.TareaID != select)
+                    printf("No hay tareas Pendientes \n");
+                    break;
+                }
+                else
+                {
+                    while (Aux != NULL)
                     {
+                        printf("|ID %d Tarea: %s Duracion: %d\n", Aux->T.TareaID, Aux->T.Descripcion, Aux->T.Duracion);
                         Aux = Aux->Siguiente;
                     }
-                    if (Aux == NULL)
+
+                    Aux = StartListaTPendiente;
+                    scanf("%d", &select);
+                    getchar();
+
+                    if (select >= 1000)
                     {
-                        printf("Id no encontrada, vuelve a intentarlo.\n");
-                        break;
+                        while (Aux != NULL && Aux->T.TareaID != select)
+                        {
+                            Aux = Aux->Siguiente;
+                        }
+                        if (Aux == NULL)
+                        {
+                            printf("Id no encontrada, vuelve a intentarlo.\n");
+                            break;
+                        }
+                        else
+                        {
+                            Nodo *nodoMover = QuitarNodo(&StartListaTPendiente, Aux->T.TareaID);
+                            InsertarNodo(&StartListaTRealizada, nodoMover);
+                            printf("Tarea movida con exito.\n");
+                            printf("Desea Marcar otra Tarea como Realizada?\n");
+                            printf("1. SI.\n");
+                            printf("0. NO.\n");
+                            scanf("%d", &select);
+                            Aux = StartListaTPendiente;
+                        }
                     }
-                    Nodo *nodoMover = QuitarNodo(&StartListaTPendiente, Aux->T.TareaID);
-                    InsertarNodo(&StartListaTRealizada, nodoMover);
-                }
-                else if (select != 0)
-                {
-                    printf("Opcion invalida, vuelve a intentarlo.\n");
+                    else if (select != 0)
+                    {
+                        printf("Opcion invalida, vuelve a intentarlo.\n");
+                    }
                 }
             }
         }
@@ -141,7 +160,7 @@ int main()
     free(nuevaTarea.Descripcion);
 
     Nodo *borrarPendiente = StartListaTPendiente;
-    Nodo *borrarRealizada = StartListaTRealizada;
+    // Nodo *borrarRealizada = StartListaTRealizada;
     while (borrarPendiente)
     {
         if (borrarPendiente->Siguiente == NULL)
@@ -149,7 +168,7 @@ int main()
             free(borrarPendiente);
             borrarPendiente = StartListaTPendiente;
         }
-        borrarPendiente->Siguiente;
+        borrarPendiente = borrarPendiente->Siguiente;
     }
 
     /*Para Pend y Realz
@@ -170,7 +189,6 @@ int main()
         borrarRealizada->Siguiente;
 
     }*/
-
 
     return 0;
 }
