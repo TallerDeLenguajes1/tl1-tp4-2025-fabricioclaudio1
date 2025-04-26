@@ -19,6 +19,7 @@ typedef struct Nodo
 
 Nodo *IniciarListaVacia();
 Nodo *CrearNodo(Tarea nuevaTarea);
+Nodo *QuitarNodo(Nodo **Start, int id);
 void InsertarNodo(Nodo **inicio, Nodo *NNodo);
 void MostrarTarea(Nodo *TNodo);
 ///
@@ -83,16 +84,18 @@ int main()
 
         case 2:
         {
+            select = 1;
             Nodo *Aux = StartListaTPendiente;
-            while (select != 1)
+            while (select != 0)
             {
                 printf("Escribe ID para marcar como Realizada.\n");
-                printf("1. Volver atras.\n");
-                while (Aux->Siguiente)
+                printf("0. Volver atras.\n");
+                do
                 {
                     printf("|ID %d Tarea: %s Duracion: %d\n", Aux->T.TareaID, Aux->T.Descripcion, Aux->T.Duracion);
                     Aux = Aux->Siguiente;
-                }
+                } while (Aux->Siguiente);
+
                 Aux = StartListaTPendiente;
                 scanf("%d", &select);
                 getchar();
@@ -107,16 +110,13 @@ int main()
                         printf("Id no encontrada, vuelve a intentarlo.\n");
                         break;
                     }
-                    
-                    nuevaTarea = Aux->T;
-                    Nodo *nodoMover = QuitarNodo(&StartListaTPendiente,Aux->T.TareaID);
-                    InsertarNodo(&StartListaTRealizada,nodoMover);
+                    Nodo *nodoMover = QuitarNodo(&StartListaTPendiente, Aux->T.TareaID);
+                    InsertarNodo(&StartListaTRealizada, nodoMover);
                 }
-                else if (select != 1)
+                else if (select != 0)
                 {
                     printf("Opcion invalida, vuelve a intentarlo.\n");
                 }
-                
             }
         }
         break;
@@ -139,6 +139,39 @@ int main()
     }
 
     free(nuevaTarea.Descripcion);
+
+    Nodo *borrarPendiente = StartListaTPendiente;
+    Nodo *borrarRealizada = StartListaTRealizada;
+    while (borrarPendiente)
+    {
+        if (borrarPendiente->Siguiente == NULL)
+        {
+            free(borrarPendiente);
+            borrarPendiente = StartListaTPendiente;
+        }
+        borrarPendiente->Siguiente;
+    }
+
+    /*Para Pend y Realz
+    while (borrarPendiente || borrarRealizada)
+    {
+        if (borrarPendiente->Siguiente == NULL)
+        {
+            free(borrarPendiente);
+            borrarPendiente = StartListaTPendiente;
+        }
+        borrarPendiente->Siguiente;
+
+        if (borrarRealizada->Siguiente == NULL)
+        {
+            free(borrarRealizada);
+            borrarRealizada = StartListaTRealizada;
+        }
+        borrarRealizada->Siguiente;
+
+    }*/
+
+
     return 0;
 }
 
